@@ -1,17 +1,34 @@
 scalar JSON
+scalar Date
+
 type Query {
-  hello: String!
+  lookup(symbol: String!): Lookup!
 }
 
 type Mutation {
   quote(symbol: String!): QuoteResult!
 }
 
+enum Resolution {
+  annual
+  quarterly
+}
+
+type Lookup {
+  symbol: String!
+  revenue(resolutions: Resolution!): [DataPoint!]!
+}
+
+type DataPoint {
+  date: Date!
+  value: Int!
+}
+
 type QuoteResult {
   change: Float!
   changePercent: Float!
   companyName: String!
-  peRatio: Float!
+  peRatio: Float
   symbol: String!
   delayedPrice: Float!
   previousClose: Float!
