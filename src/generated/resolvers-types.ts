@@ -28,8 +28,19 @@ export type GqlDataPoint = {
 
 export type GqlLookup = {
   __typename?: 'Lookup';
+  companyName: Scalars['String']['output'];
+  historicalTotalReturn: GqlTotalReturnResult;
+  logoUrl?: Maybe<Scalars['String']['output']>;
+  quote: GqlQuoteResult;
   revenue: Array<GqlDataPoint>;
+  snapshot: GqlSnapshotResult;
+  stats: GqlStatsResult;
   symbol: Scalars['String']['output'];
+};
+
+
+export type GqlLookupHistoricalTotalReturnArgs = {
+  timeframe: GqlTimeframe;
 };
 
 
@@ -37,14 +48,9 @@ export type GqlLookupRevenueArgs = {
   resolutions: GqlResolution;
 };
 
-export type GqlMutation = {
-  __typename?: 'Mutation';
-  quote: GqlQuoteResult;
-};
 
-
-export type GqlMutationQuoteArgs = {
-  symbol: Scalars['String']['input'];
+export type GqlLookupSnapshotArgs = {
+  timeframe: GqlTimeframe;
 };
 
 export type GqlQuery = {
@@ -72,6 +78,37 @@ export enum GqlResolution {
   Annual = 'annual',
   Quarterly = 'quarterly'
 }
+
+export type GqlStatsResult = {
+  __typename?: 'StatsResult';
+  dividendYield?: Maybe<Scalars['Float']['output']>;
+  freeCashFlowYield: Scalars['Float']['output'];
+  marketCap: Scalars['BigInt']['output'];
+  peRatioFwd: Scalars['Float']['output'];
+  peRatioTtm: Scalars['Float']['output'];
+  profitMarginPercent: Scalars['Float']['output'];
+};
+
+export enum GqlTimeframe {
+  Max = 'max',
+  Today = 'today',
+  Year1 = 'year1',
+  Year5 = 'year5',
+  Year10 = 'year10',
+  Ytd = 'ytd'
+}
+
+export type GqlTotalReturnResult = {
+  __typename?: 'TotalReturnResult';
+  changePercent: Scalars['Float']['output'];
+  data?: Maybe<Array<GqlDataPoint>>;
+};
+
+export type GqlSnapshotResult = {
+  __typename?: 'snapshotResult';
+  cagrPercent?: Maybe<Scalars['Float']['output']>;
+  changePercent: Scalars['Float']['output'];
+};
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -152,11 +189,14 @@ export type GqlResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Lookup: ResolverTypeWrapper<Lookup>;
-  Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   QuoteResult: ResolverTypeWrapper<GqlQuoteResult>;
   Resolution: GqlResolution;
+  StatsResult: ResolverTypeWrapper<GqlStatsResult>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Timeframe: GqlTimeframe;
+  TotalReturnResult: ResolverTypeWrapper<GqlTotalReturnResult>;
+  snapshotResult: ResolverTypeWrapper<GqlSnapshotResult>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -168,10 +208,12 @@ export type GqlResolversParentTypes = ResolversObject<{
   Float: Scalars['Float']['output'];
   JSON: Scalars['JSON']['output'];
   Lookup: Lookup;
-  Mutation: {};
   Query: {};
   QuoteResult: GqlQuoteResult;
+  StatsResult: GqlStatsResult;
   String: Scalars['String']['output'];
+  TotalReturnResult: GqlTotalReturnResult;
+  snapshotResult: GqlSnapshotResult;
 }>;
 
 export interface GqlBigIntScalarConfig extends GraphQLScalarTypeConfig<GqlResolversTypes['BigInt'], any> {
@@ -193,13 +235,15 @@ export interface GqlJsonScalarConfig extends GraphQLScalarTypeConfig<GqlResolver
 }
 
 export type GqlLookupResolvers<ContextType = any, ParentType extends GqlResolversParentTypes['Lookup'] = GqlResolversParentTypes['Lookup']> = ResolversObject<{
+  companyName?: Resolver<GqlResolversTypes['String'], ParentType, ContextType>;
+  historicalTotalReturn?: Resolver<GqlResolversTypes['TotalReturnResult'], ParentType, ContextType, RequireFields<GqlLookupHistoricalTotalReturnArgs, 'timeframe'>>;
+  logoUrl?: Resolver<Maybe<GqlResolversTypes['String']>, ParentType, ContextType>;
+  quote?: Resolver<GqlResolversTypes['QuoteResult'], ParentType, ContextType>;
   revenue?: Resolver<Array<GqlResolversTypes['DataPoint']>, ParentType, ContextType, RequireFields<GqlLookupRevenueArgs, 'resolutions'>>;
+  snapshot?: Resolver<GqlResolversTypes['snapshotResult'], ParentType, ContextType, RequireFields<GqlLookupSnapshotArgs, 'timeframe'>>;
+  stats?: Resolver<GqlResolversTypes['StatsResult'], ParentType, ContextType>;
   symbol?: Resolver<GqlResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type GqlMutationResolvers<ContextType = any, ParentType extends GqlResolversParentTypes['Mutation'] = GqlResolversParentTypes['Mutation']> = ResolversObject<{
-  quote?: Resolver<GqlResolversTypes['QuoteResult'], ParentType, ContextType, RequireFields<GqlMutationQuoteArgs, 'symbol'>>;
 }>;
 
 export type GqlQueryResolvers<ContextType = any, ParentType extends GqlResolversParentTypes['Query'] = GqlResolversParentTypes['Query']> = ResolversObject<{
@@ -217,14 +261,38 @@ export type GqlQuoteResultResolvers<ContextType = any, ParentType extends GqlRes
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type GqlStatsResultResolvers<ContextType = any, ParentType extends GqlResolversParentTypes['StatsResult'] = GqlResolversParentTypes['StatsResult']> = ResolversObject<{
+  dividendYield?: Resolver<Maybe<GqlResolversTypes['Float']>, ParentType, ContextType>;
+  freeCashFlowYield?: Resolver<GqlResolversTypes['Float'], ParentType, ContextType>;
+  marketCap?: Resolver<GqlResolversTypes['BigInt'], ParentType, ContextType>;
+  peRatioFwd?: Resolver<GqlResolversTypes['Float'], ParentType, ContextType>;
+  peRatioTtm?: Resolver<GqlResolversTypes['Float'], ParentType, ContextType>;
+  profitMarginPercent?: Resolver<GqlResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GqlTotalReturnResultResolvers<ContextType = any, ParentType extends GqlResolversParentTypes['TotalReturnResult'] = GqlResolversParentTypes['TotalReturnResult']> = ResolversObject<{
+  changePercent?: Resolver<GqlResolversTypes['Float'], ParentType, ContextType>;
+  data?: Resolver<Maybe<Array<GqlResolversTypes['DataPoint']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GqlSnapshotResultResolvers<ContextType = any, ParentType extends GqlResolversParentTypes['snapshotResult'] = GqlResolversParentTypes['snapshotResult']> = ResolversObject<{
+  cagrPercent?: Resolver<Maybe<GqlResolversTypes['Float']>, ParentType, ContextType>;
+  changePercent?: Resolver<GqlResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GqlResolvers<ContextType = any> = ResolversObject<{
   BigInt?: GraphQLScalarType;
   DataPoint?: GqlDataPointResolvers<ContextType>;
   Date?: GraphQLScalarType;
   JSON?: GraphQLScalarType;
   Lookup?: GqlLookupResolvers<ContextType>;
-  Mutation?: GqlMutationResolvers<ContextType>;
   Query?: GqlQueryResolvers<ContextType>;
   QuoteResult?: GqlQuoteResultResolvers<ContextType>;
+  StatsResult?: GqlStatsResultResolvers<ContextType>;
+  TotalReturnResult?: GqlTotalReturnResultResolvers<ContextType>;
+  snapshotResult?: GqlSnapshotResultResolvers<ContextType>;
 }>;
 

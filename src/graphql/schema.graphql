@@ -6,18 +6,50 @@ type Query {
   lookup(symbol: String!): Lookup!
 }
 
-type Mutation {
-  quote(symbol: String!): QuoteResult!
-}
-
 enum Resolution {
   annual
   quarterly
 }
 
+enum Timeframe {
+  today
+  ytd
+  year1
+  year5
+  year10
+  max
+}
+
 type Lookup {
   symbol: String!
+  companyName: String!
+  logoUrl: String
+  stats: StatsResult!
+  snapshot(timeframe: Timeframe!): snapshotResult!
+  historicalTotalReturn(timeframe: Timeframe!): TotalReturnResult!
+  # old api
+  quote: QuoteResult!
   revenue(resolutions: Resolution!): [DataPoint!]!
+}
+
+type snapshotResult {
+  changePercent: Float!
+  cagrPercent: Float
+}
+
+type TotalReturnResult {
+  changePercent: Float!
+  data: [DataPoint!]
+}
+
+type StatsResult {
+  marketCap: BigInt!
+  peRatioFwd: Float!
+  peRatioTtm: Float!
+  profitMarginPercent: Float!
+  freeCashFlowYield: Float!
+  # old api
+  dividendYield: Float
 }
 
 type DataPoint {
