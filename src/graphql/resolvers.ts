@@ -1,7 +1,6 @@
-import GraphQLJSON from "graphql-type-json";
 import {Client} from "@apperate/iexjs"
-import { Resolvers } from "../generated/resolvers-types";
-import { DateResolver } from 'graphql-scalars'
+import { GqlResolvers } from "../generated/resolvers-types";
+import { BigIntResolver, DateResolver, JSONResolver } from 'graphql-scalars'
 
 const client = new Client({api_token: process.env.IEX_API_TOKEN, version: "v1"});
 const getQuote = (symbol: string) => {
@@ -10,23 +9,35 @@ const getQuote = (symbol: string) => {
     // Cannot return null for non-nullable field
 }
 
-const resolvers: Resolvers = {
-    JSON: GraphQLJSON,
+const resolvers: GqlResolvers = {
+    BigInt: BigIntResolver,
+    JSON: JSONResolver,
     Date: DateResolver,
     Query: {
         lookup: (_, {symbol}) =>{
-            return {
+            return { symbol }
+            /* return {
                 symbol,
                 revenue: [{
                     date: '2023-01-17',
                     value: 12345678
                 }]
-            }
+            } */
         }
     },
     Mutation: {
         quote: (_: any, {symbol}) => {
             return getQuote(symbol)
+        }
+    },
+
+    Lookup: {
+        revenue: async (lookup, {resolutions}) => {
+            const result =  await client.timeSeries({ id: 'INCOME', key: lookup.symbol, limit: 100, range: '5y', subkey: resolutions})
+            return result.map((point: any) => ({
+                date: point.fiscalDate,
+                value: point.totalRevenue
+            }))
         }
     }
 }
