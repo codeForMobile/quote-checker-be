@@ -15,4 +15,15 @@ Few custom types have been built to serve the ui although not all api's are yet 
 
 ### How does it look
 
-As the final api it will look like ![Apollo graphQL query builder view](quote-checker-be-ui-custom-type.png)
+Basic api wrapper
+![Basic](quote-checker-be-query1.png)
+
+Basic api wrapper with dummy revenue data
+![Basic](quote-checker-be-query2.png)
+
+Api with real revenue data
+![Basic](quote-checker-be-custom-type.png)
+
+Final api to compare revenue of 2 products, in this case `AAPL` and etf `VOO`
+
+![Apollo graphQL query builder view](quote-checker-be-ui-custom-type.png)
